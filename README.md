@@ -130,3 +130,14 @@ sudo netfilter-persistent save
 6. Reboot the server
 7. After the server restarts, the wg0 interface, IP forwarding, and NAT rules should be active, allowing the Windows client to immediately connect and route traffic.
 
+## Troubleshooting
+* No Internet after VPN connection.: Check IP Forwarding: Ensure net.ipv4.ip_forward = 1 is enabled in /etc/sysctl.conf and loaded with sysctl -p
+* Connection fails after server reboot: Persistence failed: Verify the configuration is saved to /etc/wireguard/wg0.conf and that the systemd service is enabled: sudo systemctl status wg-quick@wg0. Check that netfilter-persistent save was run.
+* Client traffic isn't routed (bypassing VPN): Ensure the Windows client's endpoint configuration is correct and that IPv6 is disabled on the client's physical adapter.
+
+## Key Learnings
+* Public Key Cryptography: WireGuard uses a public/private key pair to establish a secure, authenticated tunnel, which is faster and more secure than traditional password/certificate methods.
+* Layer 3 Tunneling: WireGuard operates at Layer 3 (IP layer), efficiently creating a virtual network interface (wg0).
+* NAT (Masquerading): Essential for a VPN server to act as a gateway, allowing clients with private IP addresses (e.g., 10.0.0.2) to access the public internet using the server's public IP.
+* Linux Networking Primitives: The lab utilizes core Linux tools (ip, iptables, sysctl) to configure the network stack, demonstrating fundamental networking administration skills.
+* Systemd Persistence: Proper use of the wg-quick@ systemd unit and iptables-persistent is crucial for production environments, ensuring the VPN service is reliable after system events like reboots.
