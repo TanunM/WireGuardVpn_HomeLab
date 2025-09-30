@@ -138,6 +138,9 @@ sudo netfilter-persistent save
 ## Key Learnings
 * Public Key Cryptography: WireGuard uses a public/private key pair to establish a secure, authenticated tunnel, which is faster and more secure than traditional password/certificate methods.
 * Layer 3 Tunneling: WireGuard operates at Layer 3 (IP layer), efficiently creating a virtual network interface (wg0).
-* NAT (Masquerading): Essential for a VPN server to act as a gateway, allowing clients with private IP addresses (e.g., 10.0.0.2) to access the public internet using the server's public IP.
+* NAT (Masquerading): Essential for a VPN server to act as a gateway, allowing clients with private IP addresses to access the public internet using the server's public IP.
 * Linux Networking Primitives: The lab utilizes core Linux tools (ip, iptables, sysctl) to configure the network stack, demonstrating fundamental networking administration skills.
 * Systemd Persistence: Proper use of the wg-quick@ systemd unit and iptables-persistent is crucial for production environments, ensuring the VPN service is reliable after system events like reboots.
+
+## Reference
+* [Host Your Own WireGuard](https://www.youtube.com/watch?v=O2mxQSqvsaM)
