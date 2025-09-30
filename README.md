@@ -1,4 +1,4 @@
-# WireGuardVpn_HomeLab
+# WireGuardVPN_HomeLab
 
 ## Introduction
 This document provides a detailed guide for establishing a basic WireGuard VPN tunnel using an Ubuntu Server as the VPN host and a Windows machine as the VPN client. The lab focuses on setting up a persistent, peer-to-peer connection that utilizes Network Address Translation (NAT) on the server to route client traffic securely to the internet, effectively masking the client's original public IP address.
@@ -15,9 +15,9 @@ The objective of this lab is to:
 
 | Category | Requirements | Tools |
 | :--- | :--- | :--- |
-| **Server** | Ubuntu Server LTS (VM or Cloud Instance) | SSH Client (Terminal, PuTTY) |
+| **Server** | Ubuntu Server LTS (VM or Cloud Instance) | SSH Client |
 | **Client** | Windows 10/11 OS | WireGuard for Windows |
-| **System** | RAM: $\ge 1$ GB, Disk Space: $\ge 10$ GB free | Virtualization Software (VirtualBox, VMware) |
+| **System** | RAM: 1 GB, Disk Space: 10 GB free | Virtualization Software (VirtualBox, VMware) |
 | **Networking** | Server must have a public-facing network interface. | wg, ip, iptables |
 
 ## Step 1: Initial Server Setup and WireGuard Installation in Ubuntu Server
@@ -46,6 +46,8 @@ wg genkey > private
 ```bash
 sudo chmod 600 ./private
 ```
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/generate_private_key.png'/>
+
 3. Generate the corresponding public key:
 ```bash
 wg pubkey < private > public
@@ -58,6 +60,8 @@ wg pubkey < private > public
 ``` bash
 sudo ip link add wg0 type wireguard
 ```
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/add_wireguard_eth.png'/>
+
 2. Check for the new interface:
 ```bash
 ip addr
@@ -68,6 +72,9 @@ ip addr
 ```bash
 ip addr add 10.0.0.1/24 dev wg0
 ```
+
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/wg0_ip_add.png'/>
+
 2. Assign the generated private key to the interface:
 ```bash
 wg set wg0 privatekey ./private
@@ -77,12 +84,16 @@ wg set wg0 privatekey ./private
 ip link set wg0 up
 ```
 
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/wg0_up.png'/>
+
 ## Step 3: Client Configuration and Peer Pairing
 
 ### 3.1 Install and Configure WireGuard Client (Windows)
 1. Download and install the WireGuard application for Windows.
 2. Click the drop-down beside "Add Tunnel" and select "Add empty tunnel"
 3. The application will display a Public Key for the client. Copy this key.
+
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/windows_wireguard_setup.png'/>
 
 ### 3.2 Add Client Peer to Ubuntu Server
 1. On the Ubuntu Server, add the Windows client as a peer using its public key. Set its allowed internal IP to 10.0.0.2:
@@ -102,6 +113,9 @@ sudo sysctl -p
 ``` bash
 sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 ```
+
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/ip_masqurade.png'/>
+
 3. Client Traffic Verification
    * Ensure the VPN is connected on the Windows client.
    * Disable IPv6 on the Windows client's network adapter to prevent IPv6 traffic from bypassing the VPN.
@@ -111,6 +125,9 @@ sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 ``` bash
 sudo wg showconf wg0 > /etc/wireguard/wg0.conf
 ```
+
+<img src='https://github.com/TanunM/WireGuardVpn_HomeLab/blob/main/gallery/save_wg0conf.png'/>
+
 2. Enable WireGuard System Service by enabling the service to start the wg0 interface automatically at boot:
 ``` bash
 sudo systemctl enable wg-quick@wg0
